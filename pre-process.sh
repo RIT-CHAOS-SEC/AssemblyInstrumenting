@@ -16,8 +16,8 @@ instrumented="$2"
 # --------------- DEFINES ----------------------
 
 # --------------- PATH TO NonSecure directory within STM Project ----------------------
-# HOME=../../tmp/STM32L5_HAL_TRUSTZONE/NonSecure/ # adam windows
-HOME=/home/ac7717/Documents/STM32_SECURITY_LAB/TEST_PROJECTS/STM32L5_HAL_TRUSTZONE/NonSecure/ # adam ubuntu
+PROJ=../prv/
+HOME=$PROJ"NonSecure/"
 
 APP_SOURCE_PATH=$HOME"Core/Src/"
 echo "APP_SOURCE_PATH=" $APP_SOURCE_PATH
@@ -33,9 +33,9 @@ APP_OBJ_PATH=$HOME"Debug/Core/Src/"
 # --------------- GET APP ASM ----------------------
 full_file_path="${filename}.c"
 
-echo arm-none-eabi-gcc "$full_file_path" -mcpu=cortex-m33 -std=gnu11  $DEBUG -DUSE_HAL_DRIVER -DSTM32L552xx -c -I$HOME""Core/Inc -I$HOME""Secure_nsclib -I$HOME""Drivers/STM32L5xx_HAL_Driver/Inc -I$HOME""Drivers/CMSIS/Device/ST/STM32L5xx/Include -I$HOME""Drivers/STM32L5xx_HAL_Driver/Inc/Legacy -I$HOME""Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32L5xx_HAL_Driver/$filename.d" -MT"Drivers/STM32L5xx_HAL_Driver/$filename.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb  -S -o $APP_SOURCE_PATH"$filename.s"
+echo arm-none-eabi-gcc "$full_file_path" -mcpu=cortex-m33 -std=gnu11  $DEBUG -DUSE_HAL_DRIVER -DSTM32L552xx -c -I$HOME""Core/Inc -I$HOME""Secure_nsclib -I$PROJ""Drivers/STM32L5xx_HAL_Driver/Inc -I$PROJ""Drivers/CMSIS/Device/ST/STM32L5xx/Include -I$PROJ""Drivers/STM32L5xx_HAL_Driver/Inc/Legacy -I$PROJ""Drivers/STM32L5xx_HAL_Driver/Inc/ -I$PROJ""Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32L5xx_HAL_Driver/$filename.d" -MT"Drivers/STM32L5xx_HAL_Driver/$filename.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb  -S -o $APP_SOURCE_PATH"$filename.s"
 echo "    "
-arm-none-eabi-gcc "$full_file_path" -mcpu=cortex-m33 -std=gnu11 -O3 $DEBUG -DUSE_HAL_DRIVER -DSTM32L552xx -c -I. -I$HOME""Core/Inc -I$HOME""Secure_nsclib -I$HOME""Drivers/STM32L5xx_HAL_Driver/Inc -I$HOME""Drivers/CMSIS/Device/ST/STM32L5xx/Include -I$HOME""Drivers/STM32L5xx_HAL_Driver/Inc/Legacy -I$HOME""Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF""$APP_OBJ_PATH""$filename".d" -MT""$APP_OBJ_PATH""$filename".o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb  -S -o $filename".s"
+arm-none-eabi-gcc "$full_file_path" -mcpu=cortex-m33 -std=gnu11 -O0 -fno-jump-tables $DEBUG -DUSE_HAL_DRIVER -DSTM32L552xx -c -I. -I$HOME""Core/Inc -I$HOME""Secure_nsclib -I$PROJ""Drivers/STM32L5xx_HAL_Driver/Inc -I$PROJ""Drivers/CMSIS/Device/ST/STM32L5xx/Include -I$PROJ""Drivers/STM32L5xx_HAL_Driver/Inc/Legacy -I$PROJ""Drivers/STM32L5xx_HAL_Driver/Inc/ -I$PROJ""Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF""$APP_OBJ_PATH""$filename".d" -MT""$APP_OBJ_PATH""$filename".o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb  -S -o $filename".s"
 
 sed -i '/SECURE_new_log_entry/c\' application.s 
 
@@ -49,4 +49,4 @@ cp $instrumented".s" $APP_SOURCE_PATH""$filename".s"
 # cp $filename".s" $APP_SOURCE_PATH""$filename".s"
 
 # remove old CFlog files
-rm -f *.cflog
+rm -f ../cflogs/*.cflog

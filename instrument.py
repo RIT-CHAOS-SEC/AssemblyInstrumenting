@@ -33,7 +33,7 @@ def instrment_asm(directory, input_file, output_file):
 
 	app_entry_func = 'test_application'
 
-	ret_instrs    = ['bx']
+	ret_instrs    = ['bx', 'bxeq']
 	call_instrs			  = ['bl', 'blx']
 	conditional_br_instrs = ['beq','bne','bhs','blo','bhi','bls','bgt','blt','bge','ble','bcs','bcc','bmi','bpl','bvs','bvc']
 
@@ -86,8 +86,11 @@ def instrment_asm(directory, input_file, output_file):
 		if "test_application" in x:
 			x = x.replace("test_application", "application")
 
-		if '@' in x or ".file" in x:
-			continue 
+		if "application.c" in x:
+			continue
+
+		# if '@' in x or ".file" in x:
+		# 	continue 
 
 		if trampoline in x:
 			print(x, file=outfile)
@@ -105,9 +108,9 @@ def instrment_asm(directory, input_file, output_file):
 			if detect_call_inst:
 				debug_print("------ instrumenting call ("+inst+" "+args+")", file=outfile)
 				if inst == 'bl': # direct call, use ldr
-					print("\tldr\tr11, ="+args, file=outfile)
+					print("\tldr\tr10, ="+args, file=outfile)
 				elif inst == 'blx': # indirect call, can use mov
-					print("\tmov\tr11, "+args, file=outfile)
+					print("\tmov\tr10, "+args, file=outfile)
 				print("\tbl\t"+trampoline_call, file=outfile)
 
 			elif detect_cond_branch:
@@ -150,7 +153,7 @@ def instrment_asm(directory, input_file, output_file):
 		i += 1
 		parsed = x.split('\t')
 		
-		if '@' in x or ".file" in x:
+		if ".file" in x or 'nop' in x:
 			continue 
 		elif len(parsed) == 1 and parsed[0].split(":")[0] in conditional_dests:
 			debug_print("------ instrumenting cond branch dest ("+x+")", file=outfile)
@@ -158,7 +161,6 @@ def instrment_asm(directory, input_file, output_file):
 			print("\tbl\t"+trampoline_cond_br, file=outfile)
 		else:
 			print(x, file=outfile)
-
 	outfile.close()
 
 if __name__ == '__main__':
