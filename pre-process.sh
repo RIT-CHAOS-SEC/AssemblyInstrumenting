@@ -1,23 +1,13 @@
 # --------------- READ FILENAMES AS INPUTS
 
-# Check if two input parameters are provided
-if [ "$#" -lt 2 ]; then
-    echo "Error: Two input files (without their extensions) are required"
-    echo " --- "
-    echo "Example usage: $0 application instrumented"
-    echo " --- application: reads from file 'application.c' "
-    echo " --- instrumented: creates file 'instrumented.s' "
-    exit 1
-fi
-
 filename="$1"
-instrumented="$2"
 
 # --------------- DEFINES ----------------------
 
 # --------------- PATH TO NonSecure directory within STM Project ----------------------
-PROJ=../prv/
-HOME=$PROJ"NonSecure/"
+# HOME=../../tmp/STM32L5_HAL_TRUSTZONE/NonSecure/ # windows
+PROJ=../../prv/
+HOME=$PROJ"NonSecure/" # ubuntu
 
 APP_SOURCE_PATH=$HOME"Core/Src/"
 echo "APP_SOURCE_PATH=" $APP_SOURCE_PATH
@@ -41,12 +31,19 @@ sed -i '/SECURE_new_log_entry/c\' application.s
 
 # --------------- INSTRUMENT & MOVE TO PROJ ----------------------
 
-# use instrumented app
-python3 instrument.py --dir ./ --infile $filename.s --outfile $instrumented.s
-cp $instrumented".s" $APP_SOURCE_PATH""$filename".s"
+# Check if two input parameters are provided
+if [ "$#" -lt 2 ]; then
+	# use uninstrumented app
+	cp $filename".s" $APP_SOURCE_PATH""$filename".s"
+	./countAssembly.sh $filename.s
+else
+	instrumented="$2"
+	# use instrumented app
+	python3 instrument.py --dir ./ --infile $filename.s --outfile $instrumented.s
+	cp $instrumented".s" $APP_SOURCE_PATH""$filename".s"
+	./countAssembly.sh $filename.s
+	./countAssembly.sh $instrumented.s
+fi
 
-# use uninstrumented app
-# cp $filename".s" $APP_SOURCE_PATH""$filename".s"
-
-# remove old CFlog files
+# # remove old CFlog files
 rm -f ../cflogs/*.cflog

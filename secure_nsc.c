@@ -88,8 +88,8 @@ CMSE_NS_ENTRY void SECURE_Initialize_Attestation(){
 }
 
 CMSE_NS_ENTRY __attribute ((naked)) void SECURE_log_ret(){
-	__asm__ volatile("push	{r0, r1, r2, r3, r7, r12}");
-	__asm__ volatile("sub	sp, sp, #24");
+	__asm__ volatile("push	{r0, r1, r2, r3, r4, r7, r12}");
+	__asm__ volatile("sub	sp, sp, #28");
 	__asm__ volatile("add	r7, sp, #0");
 	__asm__ volatile("push	{r7, lr}");
 	__asm__ volatile("sub	sp, sp, #8");
@@ -132,16 +132,16 @@ CMSE_NS_ENTRY __attribute ((naked)) void SECURE_log_ret(){
 	__asm__ volatile("vmsr	fpscr, ip");
 	__asm__ volatile("pop	{r4}");
 	__asm__ volatile("mov	ip, lr");
-	__asm__ volatile("adds	r7, r7, #24");
+	__asm__ volatile("adds	r7, r7, #28");
 	__asm__ volatile("mov	sp, r7");
-	__asm__ volatile("pop	{r0, r1, r2, r3, r7, r12}");
+	__asm__ volatile("pop	{r0, r1, r2, r3, r4, r7, r12}");
 	__asm__ volatile("bics	lr, #1");
 	__asm__ volatile("bxns	lr");
 }
 
 CMSE_NS_ENTRY __attribute ((naked)) void SECURE_log_call(uint32_t addr){
-	__asm__ volatile("push	{r0, r1, r2, r3, r7, r10}");
-	__asm__ volatile("sub	sp, sp, #24");
+	__asm__ volatile("push	{r0, r1, r2, r3, r4, r7, r10}");
+	__asm__ volatile("sub	sp, sp, #28");
 	__asm__ volatile("add	r7, sp, #0");
 	__asm__ volatile("push	{r7, lr}");
 	__asm__ volatile("sub	sp, sp, #8");
@@ -179,17 +179,16 @@ CMSE_NS_ENTRY __attribute ((naked)) void SECURE_log_call(uint32_t addr){
 	__asm__ volatile("and	ip, r4");
 	__asm__ volatile("vmsr	fpscr, ip");
 	__asm__ volatile("mov	ip, lr");
-	__asm__ volatile("adds	r7, r7, #24");
+	__asm__ volatile("adds	r7, r7, #28");
 	__asm__ volatile("mov	sp, r7");
-	__asm__ volatile("pop	{r0, r1, r2, r3, r7, r10}");
+	__asm__ volatile("pop	{r0, r1, r2, r3, r4, r7, r10}");
 	__asm__ volatile("bics	r10, #1");
 	__asm__ volatile("bxns	r10");
 }
 
-
-CMSE_NS_ENTRY __attribute ((naked)) void SECURE_log_cond_br(){;
-	__asm__ volatile("push	{r0, r1, r2, r3, r7, r12}");
-	__asm__ volatile("sub	sp, sp, #24");
+CMSE_NS_ENTRY __attribute ((naked)) void SECURE_log_cond_br_taken(){;
+	__asm__ volatile("push	{r0, r1, r2, r3, r4, r7, r12}");
+	__asm__ volatile("sub	sp, sp, #28");
 	__asm__ volatile("add	r7, sp, #0");
 	__asm__ volatile("push	{r7, lr}");
 	__asm__ volatile("sub	sp, sp, #8");
@@ -233,9 +232,62 @@ CMSE_NS_ENTRY __attribute ((naked)) void SECURE_log_cond_br(){;
 	__asm__ volatile("vmsr	fpscr, ip");
 	__asm__ volatile("pop	{r4}");
 	__asm__ volatile("mov	ip, lr");
-	__asm__ volatile("adds	r7, r7, #24");
+	__asm__ volatile("adds	r7, r7, #28");
 	__asm__ volatile("mov	sp, r7");
-	__asm__ volatile("pop	{r0, r1, r2, r3, r7, r12}");
+	__asm__ volatile("pop	{r0, r1, r2, r3, r4, r7, r12}");
+	__asm__ volatile("bics	lr, #1");
+	__asm__ volatile("bxns	lr");
+}
+
+CMSE_NS_ENTRY __attribute ((naked)) void SECURE_log_cond_br_not_taken(){;
+	__asm__ volatile("push	{r0, r1, r2, r3, r4, r7, r12}");
+	__asm__ volatile("sub	sp, sp, #28");
+	__asm__ volatile("add	r7, sp, #0");
+	__asm__ volatile("push	{r7, lr}");
+	__asm__ volatile("sub	sp, sp, #8");
+	__asm__ volatile("add	r7, sp, #0");
+
+	uint32_t inst_addr;
+	asm("mov %0, lr" : "=r"(inst_addr));
+	inst_addr -= 4;
+	CFA_ENGINE_new_log_entry(inst_addr);
+
+	__asm__ volatile("nop");
+	__asm__ volatile("adds	r7, r7, #8");
+	__asm__ volatile("mov	sp, r7");
+	__asm__ volatile("pop	{r7, lr}");
+	__asm__ volatile("mov	r0, lr");
+	__asm__ volatile("mov	r1, lr");
+	__asm__ volatile("mov	r2, lr");
+	__asm__ volatile("mov	r3, lr");
+	__asm__ volatile("vmov.f32	s0, #1.0e+0");
+	__asm__ volatile("vmov.f32	s1, #1.0e+0");
+	__asm__ volatile("vmov.f32	s2, #1.0e+0");
+	__asm__ volatile("vmov.f32	s3, #1.0e+0");
+	__asm__ volatile("vmov.f32	s4, #1.0e+0");
+	__asm__ volatile("vmov.f32	s5, #1.0e+0");
+	__asm__ volatile("vmov.f32	s6, #1.0e+0");
+	__asm__ volatile("vmov.f32	s7, #1.0e+0");
+	__asm__ volatile("vmov.f32	s8, #1.0e+0");
+	__asm__ volatile("vmov.f32	s9, #1.0e+0");
+	__asm__ volatile("vmov.f32	s10, #1.0e+0");
+	__asm__ volatile("vmov.f32	s11, #1.0e+0");
+	__asm__ volatile("vmov.f32	s12, #1.0e+0");
+	__asm__ volatile("vmov.f32	s13, #1.0e+0");
+	__asm__ volatile("vmov.f32	s14, #1.0e+0");
+	__asm__ volatile("vmov.f32	s15, #1.0e+0");
+	__asm__ volatile("msr	APSR_nzcvqg, lr");
+	__asm__ volatile("push	{r4}");
+	__asm__ volatile("vmrs	ip, fpscr");
+	__asm__ volatile("movw	r4, #65376");
+	__asm__ volatile("movt	r4, #4095");
+	__asm__ volatile("and	ip, r4");
+	__asm__ volatile("vmsr	fpscr, ip");
+	__asm__ volatile("pop	{r4}");
+	__asm__ volatile("mov	ip, lr");
+	__asm__ volatile("adds	r7, r7, #28");
+	__asm__ volatile("mov	sp, r7");
+	__asm__ volatile("pop	{r0, r1, r2, r3, r4, r7, r12}");
 	__asm__ volatile("bics	lr, #1");
 	__asm__ volatile("bxns	lr");
 }
@@ -258,4 +310,3 @@ CMSE_NS_ENTRY void SECURE_record_output_data(uint32_t value){
   * @}
   */
 /* USER CODE END Non_Secure_CallLib */
-
