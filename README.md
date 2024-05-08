@@ -6,7 +6,7 @@ This tool can be used to instrument ARMv8-m33 C code for CFA.
 
 1) Write the application source code to `application.c` and `application.h`.
 
-2) Modify line 20 of `pre-process.sh` to point to your STM32Cube project directory
+2) Modify `PROJ` in `pre-process.sh` to point to your STM32Cube project directory
 
 3) In `application.c`, ensure any function with no internal function call has a call to `SECURE_new_log_entry`. This will ensure any added calls due to instrumentation save/return from the link register properly.
 
