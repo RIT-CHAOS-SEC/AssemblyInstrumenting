@@ -12,7 +12,7 @@ This tool can be used to instrument ARMv8-m33 C code for CFA.
 
 4) Run `pre-proces.sh` as a bash script with two input parameters. First: the C file name without the .c extension (e.g., for `application.c`, the first input should be `application`). Second: the desired name of assembly output (e.g., for `instrumented.s` the second input should be `instrumented`)
 
-5) This should result in two files. First, `application.s` containing unmodified assembly of `application.c`. Second, `instrumented.s` (or whatever you set as output file name), containing an instrumented version of `application.s`. This script modifies each call to pass through `SECURE_log_call`, each return to pass through `SECURE_log_ret`, and ensures the first instruction at the destination of conditional branches is a call to `SECURE_log_cond_br`. These trampolines are implemented in `secure_nsc.c`. This implementation ensures each control flow destination that occurred is logged.
+5) This should result in two files. First, `application.s` containing unmodified assembly of `application.c`. Second, `instrumented.s` (or whatever you set as output file name), containing an instrumented version of `application.s`. This script modifies each indirect call/jump to pass through `SECURE_log_indr_fwd`, each return to pass through `SECURE_log_ret`, and ensures the first instruction at the destination of conditional branches is a call to `SECURE_log_cond_br_taken` or `SECURE_log_cond_br_not_taken`. These trampolines are implemented in `secure_nsc.c`. This implementation ensures each control flow destination that occurred is logged.
 
 6) Add `instrumented.s` and `application.h` to the `{PROJ}/NonSecure/Core/Src` directory of your STM32Cube project
 
